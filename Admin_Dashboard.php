@@ -1,0 +1,419 @@
+<?php
+    session_start();
+    include('connect.php');
+
+    if(!isset($_SESSION['AdminID'])) 
+    {
+        echo "<script>window.alert('Please login first to continue.')</script>";
+        echo "<script>window.location='Admin_Login.php'</script>";
+        exit();
+    }
+
+    $AdminID = $_SESSION['AdminID'];
+
+    $query = "SELECT * FROM student";
+    $ret = mysqli_query($connection,$query);
+    $count = mysqli_num_rows($ret);  
+
+    $query1 = "SELECT * FROM test
+    WHERE AdminID=$AdminID";
+    $ret1 = mysqli_query($connection,$query1);
+    $count1 = mysqli_num_rows($ret1);  
+
+    $query2 = "SELECT * FROM result
+    WHERE AdminID=$AdminID";
+    $ret2 = mysqli_query($connection,$query2);
+    $count2 = mysqli_num_rows($ret2);  
+
+    $query3 = "SELECT * FROM question
+    WHERE AdminID=$AdminID";
+    $ret3 = mysqli_query($connection,$query3);
+    $count3 = mysqli_num_rows($ret3);
+
+    $query4 = "SELECT * FROM result
+    WHERE PassOrFail='Pass'";
+    $ret4 = mysqli_query($connection,$query4);
+    $count4 = mysqli_num_rows($ret4);
+
+    $query5 = "SELECT * FROM result
+    WHERE PassOrFail='Fail'";
+    $ret5 = mysqli_query($connection,$query5);
+    $count5 = mysqli_num_rows($ret5);
+
+    $query6 = "SELECT * FROM student
+    WHERE Grade='Year 10'";
+    $ret6 = mysqli_query($connection,$query6);
+    $count6 = mysqli_num_rows($ret6);
+
+    $query7 = "SELECT * FROM student
+    WHERE Grade='Year 11'";
+    $ret7 = mysqli_query($connection,$query7);
+    $count7 = mysqli_num_rows($ret7);
+
+    $query8 = "SELECT * FROM student
+    WHERE Grade='Year 12'";
+    $ret8 = mysqli_query($connection,$query8);
+    $count8 = mysqli_num_rows($ret8);
+
+    $query9 = "SELECT * FROM student
+    WHERE Grade='Year 13'";
+    $ret9 = mysqli_query($connection,$query9);
+    $count9 = mysqli_num_rows($ret9);
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+         <meta name="author" content="" />
+        <title>Dashboard - Admin</title>
+        <link href="css/styles.css" rel="stylesheet" />
+        <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
+
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
+
+    </head>
+    <body class="sb-nav-fixed" style="background-color:#0A3B75; font-family: 'Quicksand', sans-serif;">
+        <nav class="sb-topnav navbar navbar-expand navbar-light bg-white">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3" href="Admin_Dashboard.php">Online Test</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="Admin_Logout.php">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">ADMIN</div>
+                            <a class="nav-link" href="Admin_Dashboard.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <div class="sb-sidenav-menu-heading">ACCOUNT</div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-cog"></i></div>
+                                Admin
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="Admin_Profile.php">View Profile</a>
+                                    <a class="nav-link" href="Admin_Update.php">Update Profile</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link" href="Student_Profiles.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-graduate"></i></div>
+                                Student
+                            </a>
+                            <div class="sb-sidenav-menu-heading">TEST/EXAM</div>
+                            <a class="nav-link" href="Test_Page.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-file-alt"></i></div>
+                                Test
+                            </a>
+                            <a class="nav-link" href="Student_Score.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-clipboard-list"></i></div>
+                                Issue Result
+                            </a>
+                            <a class="nav-link" href="Issued_Result.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-pen"></i></div>
+                                Edit Result
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">QUESTION</div>
+                            <a class="nav-link" href="Question_Bank.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                                Question Bank
+                            </a>
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small">Logged in as:</div>
+                        Admin
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                 <div class="container-fluid px-4">
+                        <h1 class="mt-4 text-white">Dashboard</h1>
+                        <ol class="breadcrumb mb-4 bg-dark">
+                            <li class="breadcrumb-item active text-light"><a class="link text-decoration-none text-white" href="Admin_Dashboard.php">Home</a></li>
+                        </ol>
+                        <?php echo "<h4><span class='badge badge-light mb-3'>" . "<i class='fas fa-calendar'></i>&nbsp;&nbsp;" . date('Y-m-d') . "</span></h4>" ?>
+                    <div calss="dashboard-container" style="background-color:#4E75AE; position: relative; padding: 20px; border-radius: 0.25rem;">
+                        <div class="row">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-body">Students
+                                    <div class="h3 mb-0"><?php echo $count ?></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-secondary shadow text-white mb-4">
+                                    <div class="card-body">Created Tests
+                                    <div class="h3 mb-0"><?php echo $count1 ?></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-light shadow text-black mb-4">
+                                    <div class="card-body">Issued Results
+                                    <div class="h3 mb-0"><?php echo $count2 ?></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-white shadow text-black mb-4">
+                                    <div class="card-body">Created Questions
+                                    <div class="h3 mb-0"><?php echo $count3 ?></div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+                                        Pass Vs Fail Percentage
+                                    </div>
+                                    <div class="container d-flex justify-content-center"><div class="col-6 card-body"><canvas id="myChart" width="100%" height="40"></canvas></div></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        Number of students in each year
+                                    </div>
+                                    <div class="col-12 card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                            
+                        </div>                         
+                    </div>
+                    <br/>
+                    <div class="container-fluid px-4">
+
+                            <h1 class="mt-4 text-white text-center">Quick Start to Your Tasks</h1>
+                            <p class="mt-4 text-light text-center">Create a test, a question or view results!</p>
+                            <br/>
+
+                        <div class="row">
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-header">
+                                        <a class="card-link text-white" href="Test_Page.php"><i class="fas fa-file-alt"></i>&nbsp;&nbsp; Tests >> </a>
+                                    </div>
+
+                                    <div class="card-body">Lorem ipsum dolor vere guteru line deo geop<br>
+                                                            sit amet, consectut negor gihow jsoe heir<br>
+                                                            adipiscing elit tieo qaun sir, sed.
+                                    </div>                           
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-header">
+                                        <a class="card-link text-white" href="Student_Score.php"><i class="fas fa-star"></i>&nbsp;&nbsp; Answers >> </a>
+                                    </div>
+
+                                    <div class="card-body">Lorem ipsum dolor vere guteru line deo geop<br>
+                                                            sit amet, consectut negor gihow jsoe heir<br>
+                                                            adipiscing elit tieo qaun sir, sed.
+                                    </div>                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-header">
+                                        <a class="card-link text-white" href="Question_Bank.php"><i class="fas fa-book"></i>&nbsp;&nbsp; Questions >> </a>
+                                    </div>
+
+                                    <div class="card-body">Lorem ipsum dolor vere guteru line deo geop<br>
+                                                            sit amet, consectut negor gihow jsoe heir<br>
+                                                            adipiscing elit tieo qaun sir, sed.
+                                    </div>                         
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-header">
+                                        <a class="card-link text-white" href="Student_Profiles.php"><i class="fas fa-user-graduate"></i>&nbsp;&nbsp; Students >> </a>
+                                    </div>
+
+                                    <div class="card-body">Lorem ipsum dolor vere guteru line deo geop<br>
+                                                            sit amet, consectut negor gihow jsoe heir<br>
+                                                            adipiscing elit tieo qaun sir, sed.
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-header">
+                                        <a class="card-link text-white" href="Admin_Profile.php"><i class="fas fa-user-cog"></i>&nbsp;&nbsp; Admin >> </a>
+                                    </div>
+
+                                    <div class="card-body">Lorem ipsum dolor vere guteru line deo geop<br>
+                                                            sit amet, consectut negor gihow jsoe heir<br>
+                                                            adipiscing elit tieo qaun sir, sed.
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-6">
+                                <div class="card bg-dark shadow text-white mb-4">
+                                    <div class="card-header">
+                                    <a class="card-link text-white" href="Issued_Result.php"><i class="fas fa-clipboard-list"></i>&nbsp;&nbsp; Results >> </a>
+                                    </div>
+
+                                    <div class="card-body">Lorem ipsum dolor vere guteru line deo geop<br>
+                                                            sit amet, consectut negor gihow jsoe heir<br>
+                                                            adipiscing elit tieo qaun sir, sed.
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>                
+                </div>  
+                <br/>     
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Online Test 2021</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="js/scripts.js"></script>
+        <script>
+           const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Pass','Fail'],
+                    datasets: 
+                    [
+                        {
+                            label: "Dataset 1",
+                            data: [<?= $count4; ?>,<?= $count5; ?>],
+                            borderColor: ['rgba(54, 162, 235, 1)','rgba(255, 99, 132, 1)'],                       
+                            backgroundColor: ['rgba(54, 162, 235, 0.2)','rgba(255, 99, 132, 0.2)'],
+                        }
+                    ]
+                },
+                
+                options: {
+                    responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Pass / Fail'
+                    }
+                }
+            }
+        });
+
+        const ctx1 = document.getElementById('myBarChart').getContext('2d');
+            const myBarChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Students'],
+                    datasets: 
+                    [
+                        {
+                            label: "Year 10",
+                            data: [<?= $count6; ?>],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        },
+                        {
+                            label: "Year 11",
+                            data: [<?= $count7; ?>],
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                        },
+                        {
+                            label: "Year 12",
+                            data: [<?= $count8; ?>],
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1))',
+                        },
+                        {
+                            label: "Year 13",
+                            data: [<?= $count9; ?>],
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: "Students in each year"
+                    },
+                    yAxes : [
+                        {
+
+                            display : false,
+                            ticks: {
+                                beginAtZero : true,
+                                callback : (label, index, labels) => {
+                                    return Math.floor((label))
+                                } 
+                            }
+                        }
+                    ]
+                }
+            });
+
+        </script>
+    </body>
+</html>
